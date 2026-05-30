@@ -1,0 +1,26 @@
+name: Import PWA Source
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  import-source:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and extract source
+        run: |
+          wget -O /tmp/source.tar.gz "https://customer-assets.emergentagent.com/wingman/0527b9c7-1ac1-4a21-a73b-09e74a44a589/attachments/7d177275f15c4e87a375a6f0683d90e1_illustrious-pwa.tar.gz"
+          tar -xzvf /tmp/source.tar.gz -C ./
+          rm -f /tmp/source.tar.gz
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Import PWA source code" || echo "No changes"
+          git push
