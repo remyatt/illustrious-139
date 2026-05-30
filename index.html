@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Illustrious 139 — Sea Cadet Dashboard</title>
+
+  <!-- ── PWA: Manifest ─────────────────────────── -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- ── PWA: Theme & Status-bar colour ────────── -->
+  <meta name="theme-color" content="#0a2342" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Illustrious 139" />
+
+  <!-- ── PWA: Icons ────────────────────────────── -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+
+  <!-- ── SEO / Open Graph ───────────────────────── -->
+  <meta name="description" content="RCSCC Illustrious 139 Sea – corps announcements, training calendar and quick info." />
+
+  <style>
+    /* ── Design tokens ──────────────────────────────────── */
+    :root {
+      --navy:       #0a2342;
+      --navy-mid:   #123a6a;
+      --navy-light: #1b5499;
+      --gold:       #c9a84c;
+      --gold-light: #f0d080;
+      --white:      #ffffff;
+      --off-white:  #f5f7fa;
+      --text:       #1a1a2e;
+      --text-muted: #5a6580;
+      --border:     #dde3ef;
+      --card-bg:    #ffffff;
+      --shadow:     0 2px 12px rgba(10,35,66,.10);
+      --radius:     10px;
+    }
+
+    /* ── Reset / Base ───────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--off-white);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--navy-light); text-decoration: none; }
+    a:hover { text-decoration: underline; color: var(--gold); }
+    img { max-width: 100%; height: auto; }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+      color: var(--white);
+      padding: 0 20px;
+      box-shadow: 0 3px 18px rgba(0,0,0,.35);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+      flex-wrap: wrap;
+    }
+    .header-emblem {
+      width: 56px;
+      height: 56px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
+    .header-titles { flex: 1; min-width: 180px; }
+    .header-titles h1 {
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      font-weight: 700;
+      letter-spacing: .5px;
+      line-height: 1.2;
+    }
+    .header-titles p {
+      font-size: .85rem;
+      opacity: .8;
+      margin-top: 2px;
+    }
+    .header-link {
+      font-size: .82rem;
+      color: var(--gold-light);
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      padding: 5px 12px;
+      white-space: nowrap;
+      transition: background .2s;
+    }
+    .header-link:hover { background: var(--gold); color: var(--navy); text-decoration: none; }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* ── Section headings ───────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .section-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: .3px;
+    }
+    .section-header .icon {
+      width: 32px; height: 32px;
+      background: var(--navy);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .badge {
+      margin-left: auto;
+      background: var(--navy-light);
+      color: white;
+      font-size: .72rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* ── Cards ──────────────────────────────────────────── */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .card-body { padding: 20px; }
+
+    /* ── Announcements feed ─────────────────────────────── */
+    #announcements-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy-light);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      transition: border-left-color .2s, box-shadow .2s;
+    }
+    .post-card:hover {
+      border-left-color: var(--gold);
+      box-shadow: 0 4px 20px rgba(10,35,66,.15);
+    }
+    .post-date {
+      font-size: .75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .post-date::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+    .post-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 7px;
+      line-height: 1.35;
+    }
+    .post-title a { color: inherit; }
+    .post-title a:hover { color: var(--navy-light); text-decoration: none; }
+    .post-excerpt {
+      font-size: .86rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .read-more {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--navy-light);
+      letter-spacing: .3px;
+    }
+    .read-more:hover { color: var(--gold); text-decoration: none; }
+
+    /* ── Skeleton / Loading ─────────────────────────────── */
+    .skeleton {
+      background: linear-gradient(90deg, #e8ecf4 25%, #f5f7fa 50%, #e8ecf4 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .skeleton-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid #dde3ef;
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .sk-line { height: 12px; border-radius: 4px; }
+    .sk-title { height: 18px; border-radius: 4px; width: 85%; }
+
+    /* ── Error / Status ─────────────────────────────────── */
+    .status-box {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: .88rem;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .status-error { background: #fff3f3; border: 1px solid #f5c6c6; color: #9b1c1c; }
+    .status-info  { background: #eef4ff; border: 1px solid #c3d8f7; color: #1e40af; }
+
+    /* ── Calendar panel ─────────────────────────────────── */
+    .sidebar-section { display: flex; flex-direction: column; gap: 20px; }
+
+    .calendar-wrap {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .calendar-wrap iframe {
+      display: block;
+      width: 100%;
+      border: 0;
+      min-height: 400px;
+    }
+
+    /* ── Quick info card ────────────────────────────────── */
+    .info-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .info-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .87rem; color: var(--text);
+    }
+    .info-icon {
+      font-size: 18px; flex-shrink: 0; margin-top: 1px;
+    }
+    .info-list strong { display: block; color: var(--navy); font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.55);
+      text-align: center;
+      font-size: .78rem;
+      padding: 16px;
+      margin-top: auto;
+    }
+    footer a { color: var(--gold-light); }
+
+    /* ── Refresh button ─────────────────────────────────── */
+    .refresh-btn {
+      background: none; border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 10px;
+      font-size: .78rem; color: var(--text-muted);
+      cursor: pointer; display: flex; align-items: center; gap: 5px;
+      transition: border-color .2s, color .2s;
+    }
+    .refresh-btn:hover { border-color: var(--navy-light); color: var(--navy); }
+    .refresh-btn.spinning svg { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── "Last updated" ─────────────────────────────────── */
+    .last-updated { font-size: .72rem; color: var(--text-muted); }
+
+    /* ── PWA Install banner ─────────────────────────────── */
+    #install-banner {
+      display: none;
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 12px 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+      z-index: 9999;
+      align-items: center;
+      gap: 14px;
+      max-width: calc(100vw - 32px);
+      font-size: .88rem;
+    }
+    #install-banner.visible { display: flex; }
+    #install-banner strong { display: block; font-size: .95rem; }
+    #install-banner .banner-text { flex: 1; }
+    #install-btn {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: .85rem;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    #install-btn:hover { background: var(--gold-light); }
+    #dismiss-banner {
+      background: none; border: none; color: rgba(255,255,255,.6);
+      cursor: pointer; font-size: 18px; line-height: 1; flex-shrink: 0;
+      padding: 0 4px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════ HEADER ══════════════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <div class="header-emblem">⚓</div>
+    <div class="header-titles">
+      <h1>RCSCC Illustrious — 139 Sea</h1>
+      <p>Royal Canadian Sea Cadet Corps · Brampton, ON</p>
+    </div>
+    <a class="header-link" href="https://rcsccillustrious.com/" target="_blank" rel="noopener">
+      Official Site ↗
+    </a>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════ MAIN ════════════════════════════════════ -->
+<div class="container">
+
+  <!-- ── LEFT COLUMN: Announcements ── -->
+  <main id="announcements">
+    <div class="section-header">
+      <div class="icon">📢</div>
+      <h2>Latest Announcements</h2>
+      <span class="badge" id="post-count">Loading…</span>
+      <button class="refresh-btn" id="refresh-btn" title="Refresh announcements">
+        <svg id="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+
+    <div id="fetch-status"></div>
+    <div id="announcements-list" aria-live="polite"></div>
+    <p class="last-updated" id="last-updated" style="margin-top:12px;"></p>
+  </main>
+
+  <!-- ── RIGHT COLUMN: Calendar + Info ── -->
+  <aside class="sidebar-section">
+
+    <!-- Google Calendar embed -->
+    <div id="calendar">
+      <div class="section-header">
+        <div class="icon">📅</div>
+        <h2>Corps Calendar</h2>
+      </div>
+      <div class="calendar-wrap">
+        <iframe
+          id="gcal-iframe"
+          src="https://calendar.google.com/calendar/embed?src=rcsccillustrious%40gmail.com&ctz=America%2FToronto&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&height=500"
+          style="border:0"
+          width="100%"
+          height="500"
+          frameborder="0"
+          scrolling="no"
+          title="RCSCC Illustrious Google Calendar"
+          loading="lazy">
+        </iframe>
+      </div>
+      <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;text-align:center;">
+        <a href="https://calendar.google.com/calendar/embed?src=rcsccillustrious%40gmail.com&ctz=America%2FToronto" target="_blank" rel="noopener">Open full calendar ↗</a>
+      </p>
+    </div>
+
+    <!-- Quick Info card -->
+    <div class="card">
+      <div class="card-body">
+        <div class="section-header" style="margin-bottom:14px">
+          <div class="icon">ℹ️</div>
+          <h2>Quick Info</h2>
+        </div>
+        <ul class="info-list">
+          <li>
+            <span class="info-icon">🗓</span>
+            <div>
+              <strong>Regular Training</strong>
+              Tuesday evenings · 1900–2100 hrs
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">📍</span>
+            <div>
+              <strong>Training Location</strong>
+              Emil Kolb Centre (Peel Police)<br>180 Derry Rd E, Mississauga, ON
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">✉️</span>
+            <div>
+              <strong>General Enquiries</strong>
+              <a href="mailto:139Sea@cadets.gc.ca">139Sea@cadets.gc.ca</a>
+            </div>
+          </li>
+          <li>
+            <span class="info-icon">🔗</span>
+            <div>
+              <strong>Enrolment</strong>
+              <a href="https://registration.cadets.gc.ca/get-started.html" target="_blank" rel="noopener">
+                registration.cadets.gc.ca ↗
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- ════════════════════════════════════ FOOTER ══════════════════════════════════ -->
+<footer>
+  Dashboard data sourced from
+  <a href="https://rcsccillustrious.com/" target="_blank" rel="noopener">rcsccillustrious.com</a>
+  · Not an official publication · Built for convenience
+</footer>
+
+<!-- ════════════════════════════════════ PWA: Install Banner ══════════════════════ -->
+<div id="install-banner" role="dialog" aria-label="Install app">
+  <div class="banner-text">
+    <strong>📱 Add to Home Screen</strong>
+    Install Illustrious 139 for quick access
+  </div>
+  <button id="install-btn">Install</button>
+  <button id="dismiss-banner" aria-label="Dismiss">✕</button>
+</div>
+
+<!-- ════════════════════════════════════ SCRIPT ══════════════════════════════════ -->
+<script>
+  /* ── Configuration ─────────────────────────────────────────── */
+  const SITE_URL   = 'https://rcsccillustrious.com/';
+  const MAX_POSTS  = 10;
+
+  // CORS proxy list (tried in order until one succeeds)
+  const PROXIES = [
+    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  ];
+
+  /* ── DOM refs ──────────────────────────────────────────────── */
+  const listEl       = document.getElementById('announcements-list');
+  const statusEl     = document.getElementById('fetch-status');
+  const countBadge   = document.getElementById('post-count');
+  const lastUpdated  = document.getElementById('last-updated');
+  const refreshBtn   = document.getElementById('refresh-btn');
+  const refreshIcon  = document.getElementById('refresh-icon');
+
+  /* ── Helpers ───────────────────────────────────────────────── */
+  function showSkeletons(n = 4) {
+    listEl.innerHTML = Array.from({length: n}, () => `
+      <div class="skeleton-card">
+        <div class="sk-line skeleton" style="width:40%"></div>
+        <div class="sk-title skeleton"></div>
+        <div class="sk-line skeleton" style="width:100%"></div>
+        <div class="sk-line skeleton" style="width:80%"></div>
+      </div>`).join('');
+    countBadge.textContent = 'Loading…';
+  }
+
+  function showError(msg) {
+    statusEl.innerHTML = `
+      <div class="status-box status-error">
+        <span>⚠️</span>
+        <div>
+          <strong>Could not load announcements</strong><br>
+          ${msg}<br>
+          <a href="${SITE_URL}" target="_blank" rel="noopener" style="font-weight:600">
+            Visit the official website directly ↗
+          </a>
+        </div>
+      </div>`;
+    listEl.innerHTML = '';
+    countBadge.textContent = 'Error';
+  }
+
+  function clearStatus() { statusEl.innerHTML = ''; }
+
+  function formatDate(raw) {
+    try {
+      const d = new Date(raw);
+      if (isNaN(d)) return raw;
+      return d.toLocaleDateString('en-CA', { year:'numeric', month:'short', day:'numeric' });
+    } catch { return raw; }
+  }
+
+  function stripTags(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
+  }
+
+  /* ── Parse posts from raw HTML string ─────────────────────── */
+  function parsePosts(html) {
+    const parser  = new DOMParser();
+    const doc     = parser.parseFromString(html, 'text/html');
+
+    let articles = Array.from(
+      doc.querySelectorAll('article.elementor-post, article[class*="elementor-post"]')
+    );
+
+    if (!articles.length) {
+      articles = Array.from(doc.querySelectorAll('article.post, article[class*="type-post"]'));
+    }
+
+    const posts = [];
+    for (const art of articles.slice(0, MAX_POSTS)) {
+      const titleEl = art.querySelector('.elementor-post__title a, h2.entry-title a, h3.entry-title a, h1 a, h2 a, h3 a');
+      if (!titleEl) continue;
+      const title = (titleEl.textContent || '').trim();
+      const url   = titleEl.getAttribute('href') || SITE_URL;
+
+      const dateEl  = art.querySelector('.elementor-post-date, .entry-date, time, .posted-on');
+      const dateStr = dateEl ? (dateEl.getAttribute('datetime') || dateEl.textContent || '').trim() : '';
+
+      const paraEls = art.querySelectorAll('p');
+      let excerpt   = '';
+      for (const p of paraEls) {
+        const t = stripTags(p.innerHTML);
+        if (t.length > 40) { excerpt = t; break; }
+      }
+
+      posts.push({ title, url, date: dateStr, excerpt });
+    }
+    return posts;
+  }
+
+  /* ── Fetch with proxy fallback ─────────────────────────────── */
+  async function fetchWithProxies(targetUrl) {
+    let lastErr;
+    for (const makeUrl of PROXIES) {
+      try {
+        const proxyUrl = makeUrl(targetUrl);
+        const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const text = await resp.text();
+        if (text.length < 500) throw new Error('Response too short – likely blocked');
+        return text;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error('All proxies failed');
+  }
+
+  /* ── Render posts ──────────────────────────────────────────── */
+  function renderPosts(posts) {
+    if (!posts.length) {
+      listEl.innerHTML = `
+        <div class="status-box status-info">
+          ℹ️&nbsp; No announcements could be parsed.
+          <a href="${SITE_URL}" target="_blank" rel="noopener" style="margin-left:8px">View site directly ↗</a>
+        </div>`;
+      countBadge.textContent = '0';
+      return;
+    }
+    listEl.innerHTML = posts.map(p => `
+      <article class="post-card">
+        ${p.date ? `<div class="post-date">${formatDate(p.date)}</div>` : ''}
+        <div class="post-title"><a href="${p.url}" target="_blank" rel="noopener">${escHtml(p.title)}</a></div>
+        ${p.excerpt ? `<p class="post-excerpt">${escHtml(p.excerpt)}</p>` : ''}
+        <a class="read-more" href="${p.url}" target="_blank" rel="noopener">Read more →</a>
+      </article>`).join('');
+    countBadge.textContent = `${posts.length} post${posts.length !== 1 ? 's' : ''}`;
+    lastUpdated.textContent = `Last refreshed: ${new Date().toLocaleTimeString()}`;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Main load function ────────────────────────────────────── */
+  async function loadAnnouncements() {
+    showSkeletons();
+    clearStatus();
+    refreshBtn.classList.add('spinning');
+    refreshBtn.disabled = true;
+
+    try {
+      const html  = await fetchWithProxies(SITE_URL);
+      const posts = parsePosts(html);
+      clearStatus();
+      renderPosts(posts);
+    } catch (err) {
+      showError(`${err.message}. This can happen due to CORS proxy limitations.`);
+      console.error('Dashboard fetch error:', err);
+    } finally {
+      refreshBtn.classList.remove('spinning');
+      refreshBtn.disabled = false;
+    }
+  }
+
+  /* ── Refresh button ─────────────────────────────────────────── */
+  refreshBtn.addEventListener('click', loadAnnouncements);
+
+  /* ── Boot ──────────────────────────────────────────────────── */
+  loadAnnouncements();
+
+  /* ── Auto-refresh every 15 minutes ────────────────────────── */
+  setInterval(loadAnnouncements, 15 * 60 * 1000);
+
+  /* ══════════════════════════════════════════════════════════════
+     PWA: Service Worker Registration
+     ══════════════════════════════════════════════════════════════ */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => {
+          console.log('[SW] Registered, scope:', reg.scope);
+        })
+        .catch((err) => {
+          console.warn('[SW] Registration failed:', err);
+        });
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     PWA: "Add to Home Screen" / beforeinstallprompt banner
+     ══════════════════════════════════════════════════════════════ */
+  let deferredPrompt = null;
+  const installBanner = document.getElementById('install-banner');
+  const installBtn    = document.getElementById('install-btn');
+  const dismissBtn    = document.getElementById('dismiss-banner');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show banner after a short delay so it doesn't feel intrusive
+    setTimeout(() => installBanner.classList.add('visible'), 3000);
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    installBanner.classList.remove('visible');
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('[PWA] Install outcome:', outcome);
+    deferredPrompt = null;
+  });
+
+  dismissBtn.addEventListener('click', () => {
+    installBanner.classList.remove('visible');
+    deferredPrompt = null;
+  });
+
+  // Hide the banner if the app is already installed
+  window.addEventListener('appinstalled', () => {
+    installBanner.classList.remove('visible');
+    deferredPrompt = null;
+    console.log('[PWA] App installed successfully');
+  });
+</script>
+</body>
+</html>

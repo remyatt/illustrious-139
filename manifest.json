@@ -1,0 +1,43 @@
+{
+  "name": "Illustrious 139",
+  "short_name": "Illustrious 139",
+  "description": "RCSCC Illustrious – 139 Sea Cadet Corps dashboard: announcements, calendar, and quick info.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a2342",
+  "theme_color": "#0a2342",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "en-CA",
+  "categories": ["education", "news"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Announcements",
+      "short_name": "News",
+      "description": "View latest corps announcements",
+      "url": "./index.html#announcements",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Calendar",
+      "short_name": "Calendar",
+      "description": "View corps training calendar",
+      "url": "./index.html#calendar",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
